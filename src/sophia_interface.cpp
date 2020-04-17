@@ -374,9 +374,6 @@ void sophia_interface::gamma_h(double Ecm, int ip1, int Imode) {
     // second particle is always photon
     const int ip2 = 1;
 
-    // parameter of strangeness suppression
-    PAR[1] = 0.18;
-
     // slope of pomeron trajectory
     double alphap = 0.25;
 
@@ -2009,13 +2006,14 @@ double sophia_interface::crossection(double x, int NDIR, int NL0) {
 // ** author: A.Muecke **
 
     if (NL0 != 13 && NL0 != 14) throw std::runtime_error("crossection: particle ID incorrectly specified.");
+    const double AM2 = (NL0 == 13)? 0.880351 : 0.882792;  // used to be array AM2[49]. Only these two values of it are ever used.
     double SIG0[9] = {0.};
     double AMRES[9] = {0.};
     double WIDTH[9] = {0.};
 
     if (NL0 == 13) {
         for (int i = 0; i < 9; ++i) {
-            SIG0[i] = 4.893089117 / AM2[NL0 - 1] * RATIOJp[i] * BGAMMAp[i];
+            SIG0[i] = 4.893089117 / AM2 * RATIOJp[i] * BGAMMAp[i];
             AMRES[i] = AMRESp[i];
             WIDTH[i] = WIDTHp[i];
         }
@@ -2023,7 +2021,7 @@ double sophia_interface::crossection(double x, int NDIR, int NL0) {
 
     if (NL0 == 14) {
         for (int i = 0; i < 9; ++i) {
-            SIG0[i] = 4.893089117 / AM2[NL0 - 1] * RATIOJn[i] * BGAMMAn[i];
+            SIG0[i] = 4.893089117 / AM2 * RATIOJn[i] * BGAMMAn[i];
             AMRES[i] = AMRESn[i];
             WIDTH[i] = WIDTHn[i];
         }
