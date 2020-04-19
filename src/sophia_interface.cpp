@@ -1,11 +1,3 @@
-#include <iostream>
-#include <cmath>
-#include <string>
-#include <algorithm>
-#include <initializer_list>
-#include <vector>
-#include <functional>
-
 #include "sophia_interface.h"
 
 /**
@@ -69,23 +61,6 @@ void sophia_interface::debugNonLUND(std::string errm, bool stopProgram) {
 }
 
 sophiaevent_output sophia_interface::sophiaevent(bool onProton, double Ein, double eps, bool declareChargedPionsStable) {
-// ****************************************************************************
-//    SOPHIAEVENT
-// 
-//    interface between Sophia and CRPropa
-//    simulate an interaction between p/n of given energy and a photon
-// 
-//    Eric Armengaud, 2005
-//    modified & translated from FORTRAN to C++: Mario Hoerbe, 2020
-// *******************************
-//  onProton = primary particle is proton or neutron
-//  Ein = input energy of primary nucleon in GeV (SOPHIA standard energy unit)
-//  eps = input energy of target photon in GeV (SOPHIA standard energy unit)
-//  declareChargedPionsStable = pi+-0 are set to be stable particles. See array IDB for details
-//  OutPartP = list of 4-momenta + rest masses of output particles (neutrinos approx. 0)
-//  OutPartID = ID list of output particles (PDG IDs)
-//  Nout = number of output particles
-// ****************************************************************************
     const double pi = 3.141592653;
 
     if (declareChargedPionsStable) {
@@ -125,27 +100,6 @@ sophiaevent_output sophia_interface::sophiaevent(bool onProton, double Ein, doub
 }
 
 void sophia_interface::eventgen(int L0, double E0, double eps, double theta) {
-// *******************************************************
-// ** subroutine for photopion production of            **
-// ** relativistic nucleons in a soft photon field      **
-// ** subroutine for SOPHIA inVersion 1.2               **
-// ****** INPUT ******************************************
-//  E0 = energy of incident proton (in lab frame) [in GeV]
-//  eps = energy of incident photon [in GeV] (in lab frame)
-//  theta = angle between incident proton and photon [in degrees]
-//  L0 = code number of the incident nucleon
-// ****** OUTPUT *************************************************
-//  P(2000,5) = 5-momentum of produced particles 
-//  LLIST(2000) = code numbers of produced particles
-//  NP = number of produced particles
-// ***************************************************************
-// ** Date: 20/01/98       **
-// ** correct.:19/02/98    **
-// ** change:  23/05/98    **
-// ** last change:06/09/98 **
-// ** authors: A.Muecke    **
-// **          R.Engel     **
-// **************************
     const int IRESMAX = 9;
     const double pi = 3.1415926;
 
@@ -326,32 +280,6 @@ void sophia_interface::eventgen(int L0, double E0, double eps, double theta) {
 
 static int Ic = 0;
 void sophia_interface::gamma_h(double Ecm, int ip1, int Imode) {
-// **********************************************************************
-// 
-//      simple simulation of low-energy interactions (R.E. 03/98)
-// 
-//      changed to simulate superposition of reggeon and pomeron exchange 
-//      interface to Lund / JETSET 7.4 fragmentation
-//                                                   (R.E. 08/98)
-// 
-//      input: ip1    incoming particle
-//                    13 - p
-//                    14 - n
-//             Ecm    CM energy in GeV
-//             Imode  interaction mode
-//                    0 - multi-pion fragmentation
-//                    5 - fragmentation in resonance region
-//                    1 - quasi-elastic / diffractive interaction 
-//                        (p/n-gamma  --> n/p rho)
-//                    4 - quasi-elastic / diffractive interaction 
-//                        (p/n-gamma  --> n/p omega)
-//                    2 - direct interaction (p/n-gamma  --> n/p pi)
-//                    3 - direct interaction (p/n-gamma  --> delta pi)
-//             IFBAD control flag
-//                   (0  all OK,
-//                    1  generation of interaction not possible)
-// 
-// **********************************************************************
     double P_dec[5][10] = {0.};
     double P_in[5] = {0.};
     double xs1[2] = {0.};
@@ -1099,11 +1027,6 @@ void sophia_interface::gamma_h(double Ecm, int ip1, int Imode) {
 }
 
 void sophia_interface::DECSIB() {
-// ***********************************************************************
-// Decay all unstable particle in SIBYLL
-// decayed particle have the code increased by 10000
-// (taken from SIBYLL 1.7, R.E. 04/98)
-// ***********************************************************************
     int LLIST1[2000] = {0};
     double P0[5] =  {0.};
     int NN = 1;
@@ -1133,9 +1056,6 @@ void sophia_interface::DECSIB() {
 }
 
 DECPAR_zero_output sophia_interface::DECPAR_zero(double P0[5], int ND, int LL[10]) {
-// the routine generates a phase space decay of a particle
-// with 5-momentum P0(1:5) into ND particles of codes LL(1:nd)
-// (taken from SIBYLL 1.7, muon decay corrected, R.E. 04/98)
     double P_out[5][10] = {0.};
     double PV[5][10] = {0.};
     double RORD[10] = {0.};
@@ -1287,12 +1207,6 @@ DECPAR_zero_output sophia_interface::DECPAR_zero(double P0[5], int ND, int LL[10
 }
 
 DECPAR_nonZero_output sophia_interface::DECPAR_nonZero(int LA, double P0[5]) {
-// ***********************************************************************
-// This subroutine generates the decay of a particle
-// with ID = LA, and 5-momentum P0(1:5)
-// into ND particles of 5-momenta P(j,1:5) (j=1:ND)
-// (taken from SIBYLL 1.7, muon decay corrected, R.E. 04/98)
-// ***********************************************************************
     int LL[10] = {0};
     double P_out[5][10] = {0.};
     double PV[5][10] = {0.};
@@ -1485,13 +1399,6 @@ DECPAR_nonZero_output sophia_interface::DECPAR_nonZero(int LA, double P0[5]) {
 }
 
 PO_MSHELL_output sophia_interface::PO_MSHELL(double PA1[4], double PA2[4], double XM1, double XM2) {
-// ********************************************************************
-// rescaling of momenta of two partons to put both on mass shell
-// input:       PA1,PA2   input momentum vectors
-//              XM1,2     desired masses of particles afterwards
-//              P1,P2     changed momentum vectors
-// (taken from PHOJET 1.12, R.E. 08/98)
-// ********************************************************************
     std::vector<double> P1;
     std::vector<double> P2;
 
@@ -1562,9 +1469,6 @@ PO_MSHELL_output sophia_interface::PO_MSHELL(double PA1[4], double PA2[4], doubl
 }
 
 std::vector<int> sophia_interface::valences(int ip) {
-// valence quark composition of various particles  (R.E. 03/98)
-// (with special treatment of photons)
-
     int ival1 = 0;
     int ival2 = 0;
 
@@ -1628,7 +1532,6 @@ std::vector<int> sophia_interface::valences(int ip) {
 }
 
 void sophia_interface::check_event(int Ic, double Esum, double PXsum, double PYsum, double PZsum, int IQchr, int IQbar) {
-// check energy-momentum and quantum number conservation (R.E. 08/98) 
     double px = 0.;
     double py = 0.;
     double pz = 0.;
@@ -1685,11 +1588,6 @@ void sophia_interface::check_event(int Ic, double Esum, double PXsum, double PYs
 }
 
 int sophia_interface::dec_res2(double eps_prime, int IRESMAX, int L0) {
-// *****************************************************************************
-// decides which resonance with ID=IRES in list takes place at eps_prime
-// ** Date: 20/01/98   **
-// ** author: A.Muecke **
-// **********************
     double prob_sum[9] = {0.};
 
     // sum of all resonances:
@@ -1724,19 +1622,6 @@ int sophia_interface::dec_res2(double eps_prime, int IRESMAX, int L0) {
 }
 
 void sophia_interface::RES_DECAY3(int IRES, int IPROC, int IRANGE, double s, int L0) {
-// ********************************************************
-// RESONANCE AMD with code number IRES  INTO  M1 + M2
-// PROTON ENERGY E0 [in GeV] IN DMM [in GeV]
-// E1,E2 [in GeV] are energies of decay products
-// LA,LB are code numbers of decay products
-// P(1,1:5),P(2,1:5) are 5-momenta of particles LA,LB;
-// resulting momenta are calculated in CM frame;
-// cosAngle is cos of scattering angle in CM frame
-// ********************************************************
-// ** Date: 20/01/98    **
-// ** correct.:28/04/98 **
-// ** author: A.Muecke  **
-// **********************
     // determine decay products LA, LB:
     np = 2;
 
@@ -1788,22 +1673,6 @@ void sophia_interface::RES_DECAY3(int IRES, int IPROC, int IRANGE, double s, int
 }
 
 void sophia_interface::PROC_TWOPART(int LA, int LB, double AMD, double cosAngle) {
-// ***********************************************************
-// 2-particle decay of CMF mass AMD INTO  M1 + M2
-// nucleon energy E0 [in GeV];
-// E1,E2 [in GeV] are energies of decay products
-// LA,LB are code numbers of decay products
-// P1(1:5),P2(1:5) are 5-momenta of particles LA,LB;
-// resulting momenta are calculated in CM frame;
-// costheta is cos of scattering angle in CM frame
-// this program also checks if the resulting particles are
-// resonances; if yes, it is also allowed to decay a
-// mass AMD < M1 + M2 by using the width of the resonance(s)
-// ***********************************************************
-// ** Date: 20/01/98    **
-// ** correct.:19/02/98 **
-// ** author: A.Muecke  **
-// **********************
     int nbad = 0;
     double SM1 = AM[LA - 1];
     double SM2 = (LB == 0)? 2. * AM[6] : AM[LB - 1];
@@ -1878,18 +1747,6 @@ void sophia_interface::PROC_TWOPART(int LA, int LB, double AMD, double cosAngle)
 }
 
 int sophia_interface::dec_inter3(double eps_prime, int L0) {
-// *** decides which process takes place at eps_prime *********
-// (0) multipion production (fragmentation)                 ***
-// (1) diffractive scattering: N\gamma --> N \rho           ***
-// (2) direct pion production: N\gamma --> N \pi            ***
-// (3) direct pion production: N\gamma --> \Delta \pi       ***
-// (4) diffractive scattering: N\gamma --> N \omega         ***
-// (5) fragmentation in resonance region                    ***
-// (6) excitation/decay of resonance                        ***
-// ************************************************************
-// ** Date: 15/04/98   **
-// ** author: A.Muecke **
-// **********************
     int Imode = -1;
 
     double tot = crossection(eps_prime, 3, L0);
@@ -1924,13 +1781,6 @@ int sophia_interface::dec_inter3(double eps_prime, int L0) {
 }
 
 double sophia_interface::sample_s(double eps, int L0, double Ein) {
-// ***********************************************************************
-//  samples distribution of s: p(s) = (s-mp^2)sigma_Ngamma
-//  rejection for s=[sth,s0], analyt.inversion for s=[s0,smax]
-// ***********************************************************************
-// ** Date: 20/01/98   **
-// ** author: A.Muecke **
-// **********************
     double s = 0.;
     double xmp = AM[L0 - 1];
     double Pp = std::sqrt(Ein * Ein - xmp * xmp);
@@ -1997,14 +1847,6 @@ double sophia_interface::functs(double s, int L0) {
 }
 
 double sophia_interface::crossection(double x, int NDIR, int NL0) {
-// calculates crossection of Nucleon-gamma-interaction
-// (see thesis of J.Rachen, p.45ff and corrections
-// report from 27/04/98, 5/05/98, 22/05/98 of J.Rachen)
-// ** Date: 20/01/98   **
-// ** correct.:27/04/98**
-// ** update: 23/05/98 **
-// ** author: A.Muecke **
-
     if (NL0 != 13 && NL0 != 14) throw std::runtime_error("crossection: particle ID incorrectly specified.");
     const double AM2 = (NL0 == 13)? 0.880351 : 0.882792;  // used to be array AM2[49]. Only these two values of it are ever used.
     double SIG0[9] = {0.};
@@ -2157,10 +1999,6 @@ double sophia_interface::crossection(double x, int NDIR, int NL0) {
 }
 
 dec_proc2_output sophia_interface::dec_proc2(double x, int IRES, int L0) {
-// decide which decay with ID=IPROC of resonance IRES takes place ***
-// Date: 20/01/98   **
-// correct.: 27/04/98*
-// author: A.Muecke **
     int IPROC = 0;
     int IRANGE = 0;
     double prob_sum[10] = {0.};
@@ -2331,18 +2169,6 @@ double sophia_interface::twoback(double x) {
 }
 
 double sophia_interface::scatterangle(int IRES, int L0) {
-// *******************************************************************
-// This routine samples the cos of the scattering angle for a given **
-// resonance IRES and incident nucleon L0; it is exact for          **
-// one-pion decay channel and if there is no                        **
-// other contribution to the cross section from another resonance   **
-// and an approximation for an overlay of resonances;               **
-// for decay channels other than the one-pion decay a isotropic     **
-// distribution is used                                             **
-// *******************************************************************
-// ** Date: 16/02/98   **
-// ** author: A.Muecke **
-// **********************
     // use rejection method for sampling:
     int LA = LLIST[0];
     int LB = LLIST[1];
@@ -2366,11 +2192,6 @@ double sophia_interface::scatterangle(int IRES, int L0) {
 }
 
 double sophia_interface::probangle(int IRES, int L0, double z) {
-// *******************************************************************
-// probability distribution for scattering angle of given resonance **
-// IRES and incident nucleon L0 ;                                   **
-// z is cosine of scattering angle in CMF frame                     **
-// *******************************************************************
     if (IRES == 4 || IRES == 5 || IRES == 2) {
         // N1535 andf N1650 decay isotropically.
         return 0.5;
@@ -2408,10 +2229,6 @@ double sophia_interface::probangle(int IRES, int L0, double z) {
 }
 
 PO_ALTRA_output sophia_interface::PO_ALTRA(double GA, double BGX, double BGY, double BGZ, double PCX, double PCY, double PCZ, double EC) {
-// *********************************************************************
-// arbitrary Lorentz transformation
-// (taken from PHOJET v1.12, R.E. 08/98)
-// *********************************************************************
     double EP = PCX * BGX + PCY * BGY + PCZ * BGZ;
     double PE = EP / (GA + 1.) + EC;
     double PX = PCX + BGX * PE;
@@ -2430,11 +2247,6 @@ PO_ALTRA_output sophia_interface::PO_ALTRA(double GA, double BGX, double BGY, do
 }
 
 std::vector<double> sophia_interface::PO_TRANS(double XO, double YO, double ZO, double CDE, double SDE, double CFE, double SFE) {
-// *********************************************************************
-// rotation of coordinate frame (1) de rotation around y axis
-//                              (2) fe rotation around z axis
-// (taken from PHOJET v1.12, R.E. 08/98)
-// *********************************************************************
     double X =  CDE * CFE * XO - SFE * YO + SDE * CFE * ZO;
     double Y =  CDE * SFE * XO + CFE * YO + SDE * SFE * ZO;
     double Z = -SDE       * XO            + CDE       * ZO;
@@ -2447,10 +2259,6 @@ std::vector<double> sophia_interface::PO_TRANS(double XO, double YO, double ZO, 
 }    
 
 PO_SELSX2_output sophia_interface::PO_SELSX2(double XMIN[2], double XMAX[2], double AS1, double AS2) {
-// *********************************************************************
-// select x values of soft string ends using PO_RNDBET
-// (taken from PHOJET v1.12, R.E. 08/98)
-// *********************************************************************
     PO_SELSX2_output pso;
 
     bool isRejected = true;
@@ -2501,29 +2309,12 @@ PO_SELSX2_output sophia_interface::PO_SELSX2(double XMIN[2], double XMAX[2], dou
 }
 
 double sophia_interface::PO_RNDBET(double GAM, double ETA) {
-// *********************************************************************
-// random number generation from beta
-// distribution in region  0 < X < 1.
-// F(X) = X**(GAM-1.)*(1.-X)**(ETA-1)*GAMM(ETA+GAM) / (GAMM(GAM*GAMM(ETA))
-// (taken from PHOJET v1.12, R.E. 08/98)
-// *********************************************************************
     double Y = PO_RNDGAM(GAM);
     double Z = PO_RNDGAM(ETA);
     return Y / (Y + Z);
 }
 
 double sophia_interface::PO_RNDGAM(double ETA) {
-// *********************************************************************
-// random number selection from gamma distribution
-// F(X) = ALAM**ETA*X**(ETA-1)*EXP(-ALAM*X) / GAM(ETA)
-// (taken from PHOJET v1.12, R.E. 08/98)
-
-// Note1: if you compare this function with its FORTRAN original version,
-// have a look at how GOTOs work there and how doubles are being cast into
-// integers and vice versa. The redundant code solves the GOTO pointers.
-// this was definetely one of the most exciting functions to translate!
-// Note2 ALAM would have been an argument to this function but is always called with ALAM=1.
-// *********************************************************************
     double Y = 0.;
     int n = static_cast<int>(ETA);
     double F = ETA - static_cast<double>(n);
@@ -2569,7 +2360,6 @@ double sophia_interface::PO_RNDGAM(double ETA) {
 
 static bool lund_frag_isInitialized = false;
 void sophia_interface::lund_frag(double SQS) {
-// interface to Lund/Jetset fragmentation (R.E. 08/98)
     int KC = 0;
     if (lund_frag_isInitialized == false) {
 
@@ -2624,7 +2414,6 @@ void sophia_interface::lund_frag(double SQS) {
 }
 
 void sophia_interface::lund_put(int I, int IFL, double PX, double PY, double PZ, double EE) {
-// store initial configuration into Lund common block (R.E. 08/98)
     int Il = 0;
     switch (IFL) {
         case 1:
@@ -2674,7 +2463,6 @@ void sophia_interface::lund_put(int I, int IFL, double PX, double PY, double PZ,
 }
 
 lund_get_output sophia_interface::lund_get(int I) {
-// read final states from Lund common block (R.E. 08/98)
     lund_get_output lgo;
 
     lgo.PX = PLU(I, 1);
@@ -2691,7 +2479,6 @@ lund_get_output sophia_interface::lund_get(int I) {
 }
 
 int sophia_interface::ICON_PDG_SIB(int ID) {
-// convert PDG particle codes to SIBYLL particle codes (R.E. 09/97)
     int ITABLE[49] = {  22,  -11,   11,  -13,   13,  111,  211, -211,       321,      -321,
                        130,  310, 2212, 2112,   12,  -12,   14,  -14, -99999999, -99999999,
                        311, -311,  221,  331,  213, -213,  113,  323,      -323,       313,
@@ -2722,9 +2509,6 @@ int sophia_interface::ICON_PDG_SIB(int ID) {
 }
 
 double sophia_interface::PO_XLAM(double X, double Y, double Z) {
-//    auxiliary function for two/three particle decay mode
-//    (standard LAMBDA**(1/2) function)
-//    (taken from PHOJET 1.12, R.E. 08/98)
       double YZ = Y - Z;
       double XLAM = X * X - 2. * X * (Y + Z) + YZ * YZ;
       if (XLAM < 0.) XLAM = -XLAM;
@@ -2761,14 +2545,11 @@ double sophia_interface::breitwigner(double sigma_0, double Gamma, double DMM, d
 }
 
 double sophia_interface::RNDM() {
-// This is the RNG called by all other non-JETSET routines.
-// The same as RLU from JETSET except for another seed.
     bool isCalledByRNDM = true;
     return RLU(isCalledByRNDM);
 }
 
 void sophia_interface::LUEXEC() {
-// Purpose: to administrate the fragmentation and decay chain.
     double PS[6][2] = {0.};
 
     // Initialize and reset.
@@ -2883,7 +2664,6 @@ void sophia_interface::LUEXEC() {
 }
 
 void sophia_interface::LUDECY(int IP) {
-// Purpose: to handle the decay of unstable particles.
     double VDCY[4] = {0.};
     int KFLO[4] = {0};
     int KFL1[4] = {0};
@@ -4005,8 +3785,6 @@ void sophia_interface::LUDECY(int IP) {
 }
 
 void sophia_interface::LUDECY_setupPartonShowerEvolution(int IP, int NSAV, int MMAT, int ND, int MMIX) {
-// Set up for parton shower evolution from jets.
-// This function is only called by LUDECY. After this function was called, LUDECY returns.
     if (MSTJ[22] >= 1 && MMAT == 4 && K[1][NSAV] == 21) {
         K[0][NSAV] = 3;
         K[0][NSAV + 1] = 3;
@@ -4081,8 +3859,6 @@ void sophia_interface::LUDECY_setupPartonShowerEvolution(int IP, int NSAV, int M
 }
 
 void sophia_interface::LUSTRF(int IP) {
-// Purpose: to handle the fragmentation of an arbitrary colour singlet 
-// jet system according to the Lund string fragmentation model. 
     double DPS[5] = {0.};
     int KFL[3] = {0};
     double PMQ[3] = {0.};
@@ -5268,8 +5044,6 @@ void sophia_interface::LUSTRF(int IP) {
 }
 
 void sophia_interface::LUINDF(int IP) {
-// Purpose: to handle the fragmentation of a jet system (or a single jet)
-// according to independent fragmentation models.
     double DPS[5] = {0.};
     double PSI[4] = {0.};
     int NFI[3] = {0};
@@ -5780,8 +5554,6 @@ void sophia_interface::LUINDF(int IP) {
 }
 
 void sophia_interface::LUPREP(int IP) {
-// Purpose: to rearrange partons along strings, to allow small systems 
-// to collapse into one or two particles and to check flavours. 
     double DPS[5] = {0.};
     double DPC[5] = {0.};
     double UE[5] = {0.};
@@ -6111,8 +5883,6 @@ void sophia_interface::LUPREP(int IP) {
 }
 
 void sophia_interface::LUPREP_checkFlavour(int IP) {
-// Serves as a local function of LUPREP. Solves goto->320 statement.
-// When this function is called, LUPREP returns.
     // Check flavours and invariant masses in parton systems.
     int NP = 0;
     int KFN = 0;
@@ -6150,7 +5920,6 @@ void sophia_interface::LUPREP_checkFlavour(int IP) {
 }
 
 double sophia_interface::LUZDIS(int KFL1, int KFL2, double PR) {
-// Purpose: to generate the longitudinal splitting variable Z.
     double Z = 0.;
 
     // Check if heavy flavour fragmentation. 
@@ -6276,8 +6045,6 @@ double sophia_interface::LUZDIS(int KFL1, int KFL2, double PR) {
 }
 
 std::vector<double> sophia_interface::LUPTDI(int KFL) {
-// Purpose: to generate transverse momentum according to a Gaussian.
-// output: vector = (PX, PY)
     // Generate p_T and azimuthal angle, gives p_x and p_y.
     int KFLA = std::abs(KFL);
     double PT = PARJ[20] * std::sqrt(-std::log(std::max(1e-10, RLU())));
@@ -6295,9 +6062,6 @@ std::vector<double> sophia_interface::LUPTDI(int KFL) {
 }
 
 std::vector<int> sophia_interface::LUKFDI(int KFL1, int KFL2) {
-// Purpose: to generate a new flavour pair and combine off a hadron.
-// Default flavour values. Input consistency checks.
-// Returns vector (KFL3, KF).
     int KFL3 = 0;
     int KF = 0;
     std::vector<int> output;
@@ -6680,8 +6444,6 @@ std::vector<int> sophia_interface::LUKFDI(int KFL1, int KFL2) {
 }
 
 void sophia_interface::LUEDIT(int MEDIT) {
-// Purpose: to perform global manipulations on the event record,
-// in particular to exclude unstable or undetectable partons/particles.
     int NS[2];
     double PTS[2];
     double PLS[2];
@@ -6947,7 +6709,6 @@ void sophia_interface::LUEDIT(int MEDIT) {
 }
 
 void sophia_interface::LUSHOW(int IP1, int IP2, double QMAX) {
-// Purpose: to generate timelike parton showers from given partons. 
     double PMTH[50][5];
     double PS[5];
     double PMA[4];
@@ -8086,9 +7847,6 @@ void sophia_interface::LUSHOW(int IP1, int IP2, double QMAX) {
 }
 
 void sophia_interface::LUBOEI(int NSAV) {
-// Purpose: to modify event so as to approximately take into account
-// Bose-Einstein effects according to a simple phenomenological
-// parametrization.
     double DPS[4];
     double BEI[100];
     int NBE[10];
@@ -8237,8 +7995,6 @@ void sophia_interface::LUBOEI(int NSAV) {
 }
 
 void sophia_interface::LUJOIN(int NJOIN, int IJOIN[]) {
-// Purpose: to connect a sequence of partons with colour flow indices,
-// as required for subsequent shower evolution (or other operations).
     // Check that partons are of right types to be connected.
     if (NJOIN < 2) {
         // Error exit: no action taken.
@@ -8289,11 +8045,6 @@ void sophia_interface::LUJOIN(int NJOIN, int IJOIN[]) {
 }
 
 void sophia_interface::LUERRM(int MERR, std::string CHMESS) {
-// Purpose: to inform user of errors in program execution.
-// VERY IMPORTANT NOTE: in the original version, all error messages have been set
-// to silently fail!!! This option was set with MSTU[20] = 0. While operating SOPHIA,
-// silent fails actually happend now and then!
-
     // Write first few warnings, then be silent.
     if (MERR <= 10) {
         MSTU[26]++;
@@ -8406,7 +8157,6 @@ void sophia_interface::LUDBRB(int IMIN, int IMAX, double THE, double PHI, double
 }
 
 void sophia_interface::LUROBO(double THE, double PHI, double BEX, double BEY, double BEZ) {
-// Purpose: to perform rotations and boosts.
     // Find range of rotation/boost. Convert boost to double precision.
     int IMIN = 1;
     if (MSTU[0] < 0) IMIN = MSTU[0];
@@ -8417,7 +8167,6 @@ void sophia_interface::LUROBO(double THE, double PHI, double BEX, double BEY, do
 }
 
 int sophia_interface::KLU(int I, int J) {
-// Purpose: to provide various integer-valued event related data.
     // Default value. For I=0 number of entries, number of stable entries
     // or 3 times total charge.
     int result = 0;
@@ -8550,8 +8299,6 @@ int sophia_interface::KLU(int I, int J) {
 static int MRLU[6] = {19780503, 0, 0, 97, 33, 0};
 static double RRLU[100] = {0.};
 double sophia_interface::RLU(bool isCalledByRNDM) {
-// Purpose: to generate random numbers uniformly distributed between
-// 0 and 1, excluding the endpoints.
     // Initialize generation from given seed.
     if (MRLU[1] == 0) {
         if (isCalledByRNDM && MRLU[0] == 0) MRLU[0] = 19780503;  // initial seed if called by RNDM
@@ -8611,7 +8358,6 @@ double sophia_interface::RLU(bool isCalledByRNDM) {
 }
 
 double sophia_interface::ULMASS(int KF) {
-// Purpose: to give the mass of a particle/parton.
     double result = 0.;
     int KFA = std::abs(KF);
     int KC = LUCOMP(KF);
@@ -8688,7 +8434,6 @@ double sophia_interface::ULMASS(int KF) {
 }
 
 double sophia_interface::ULANGL(double X, double Y) {
-// Purpose: to reconstruct an angle from given x and y coordinates.
     double result = 0.;
     double R = std::sqrt(X * X + Y * Y);
     if (R < 1e-20) return 0.;
@@ -8707,7 +8452,6 @@ double sophia_interface::ULANGL(double X, double Y) {
 }
 
 double sophia_interface::PLU(int I, int J) {
-// Purpose: to provide various real-valued event related data.
     double PSUM[4];
 
     // Set default value. For I = 0 sum of momenta or charges, or invariant mass of system.
@@ -8780,7 +8524,6 @@ double sophia_interface::PLU(int I, int J) {
 }
 
 int sophia_interface::LUCHGE(int KF) {
-// Purpose: to give three times the charge for a particle/parton.
     // Initial values. Simple case of direct readout.
     int result = 0;
     int KFA = std::abs(KF);
@@ -8805,8 +8548,6 @@ int sophia_interface::LUCHGE(int KF) {
 }
 
 int sophia_interface::LUCOMP(int KF) {
-// Purpose: to compress the standard KF codes for use in mass and decay 
-// arrays; also to check whether a given code actually is defined.   
     static int KFTAB[25] = { 211,   111,   221,  311, 321,
                              130,   310,   213,  113, 223,
                              313,   323,  2112, 2212, 210,
@@ -8980,10 +8721,7 @@ int ID_sophia_to_PDG(int sophiaID) {
 }
 
 
-// prototype for qq interactions. This is a separate entry to JETSET
 void sophia_interface::LU2ENT(int KF1, int KF2, double PECM) {
-// Purpose: to store two partons/particles in their CM frame, with the first along the +z axis. 
-
     // Standard checks.
     MSTU[27] = 0;
     int IPA = 1;
