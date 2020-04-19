@@ -1,6 +1,34 @@
 #ifndef SOPHIA_INTERFACE_H
 #define SOPHIA_INTERFACE_H
 
+/**
+    This is a C++ version of SOPHIA.
+    Translated by Mario Hoerbe (mario.hoerbe@ruhr-uni-bochum.de)
+    2020
+*/
+
+/**
+c*****************************************************************************
+c**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!***
+c**!!              IF YOU USE THIS PROGRAM, PLEASE CITE:                 !!***
+c**!! A.M"ucke, Ralph Engel, J.P.Rachen, R.J.Protheroe and Todor Stanev, !!***
+c**!!  1999, astro-ph/9903478, to appear in Comp.Phys.Commun.            !!***
+c**!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!***
+c*****************************************************************************
+c** Further SOPHIA related papers:                                         ***
+c** (1) M"ucke A., et al 1999, astro-ph/9808279, to appear in PASA.        ***
+c** (2) M"ucke A., et al 1999, to appear in: Proc. of the                  ***
+c**      19th Texas Symposium on Relativistic Astrophysics, Paris, France, ***
+c**      Dec. 1998. Eds.: J.~Paul, T.~Montmerle \& E.~Aubourg (CEA Saclay) ***
+c** (3) M"ucke A., et al 1999, astro-ph/9905153, to appear in: Proc. of    ***
+c**      19th Texas Symposium on Relativistic Astrophysics, Paris, France, ***
+c**      Dec. 1998. Eds.: J.~Paul, T.~Montmerle \& E.~Aubourg (CEA Saclay) ***
+c** (4) M"ucke A., et al 1999, to appear in: Proc. of 26th Int.Cosmic Ray  ***
+c**      Conf. (Salt Lake City, Utah)                                      ***
+c*****************************************************************************
+*/
+
+
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -221,6 +249,7 @@ public:
     //  OutPartID = ID list of output particles (PDG IDs)
     //  Nout = number of output particles
     // ****************************************************************************
+    // this is the only function a user should run
     sophiaevent_output sophiaevent(bool onProton, double Ein, double eps, bool declareChargedPionsStable=false);
 
     // *******************************************************
