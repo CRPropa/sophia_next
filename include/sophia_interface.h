@@ -15,6 +15,12 @@ struct sophiaevent_output {
     double outPartP[5][2000];
     int outPartID[2000];
     int Nout;
+    double getPartP(int i, int j) const {
+	return outPartP[i][j];
+    }
+    int getPartID(int i) const {
+	return outPartID[i];
+    }
 };
 
 struct DECPAR_zero_output {

@@ -1,0 +1,15 @@
+from pysophia import *
+
+SI = SophiaInterface()
+
+onProton = True;
+Ein = 1e9;  # GeV
+eps = 1e-9;  # GeV
+declareChargedPionsStable = True
+
+out = SI.sophiaevent(onProton, Ein, eps, declareChargedPionsStable)
+
+print("Nout: ", out.Nout)
+print("getPartID: ", out.getPartID(0))
+print("getPartP: ", out.getPartP(0,0))
+

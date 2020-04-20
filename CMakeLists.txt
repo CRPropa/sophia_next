@@ -11,6 +11,36 @@ add_library(sophianext SHARED
 )
 
 # ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
+option(ENABLE_PYTHON "Create python library via Pybind11" ON)
+find_package(PythonInterp)
+find_package(PythonLibs)
+
+if(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
+        include_directories(${PYTHON_INCLUDE_DIRS})
+        add_subdirectory(lib/pybind11)
+
+        pybind11_add_module(pysophia
+                python/interface.cpp
+        )
+
+        set_target_properties(pysophia PROPERTIES
+                                        PREFIX ""
+                                        OUTPUT_NAME "pysophia"
+                                        LINKER_LANGUAGE CXX)
+        target_link_libraries(pysophia PRIVATE sophianext)
+
+	execute_process(
+	  COMMAND "${PYTHON_EXECUTABLE}" -c "if True:
+		    from distutils import sysconfig as sc
+		    print(sc.get_python_lib(prefix='', plat_specific=True))"
+	  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+	  OUTPUT_STRIP_TRAILING_WHITESPACE)
+        install(TARGETS pysophia LIBRARY DESTINATION "${PYTHON_SITE_PACKAGES}")
+endif(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
+
+# ----------------------------------------------------------------------------
 # Testing
 # ----------------------------------------------------------------------------
 
@@ -29,6 +59,12 @@ if(ENABLE_TESTING)
         add_executable(testFirst test/testFirst.cpp)
         target_link_libraries(testFirst sophianext gtest gtest_main)
         add_test(testFirst testFirst)
+
+	# python tests
+        if(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
+		CONFIGURE_FILE(test/testPythonInterface.py.in testPythonInterface.py)
+		add_test(testPythonInterface ${PYTHON_EXECUTABLE} testPythonInterface.py)
+	endif(ENABLE_PYTHON AND PYTHONLIBS_FOUND)
 endif(ENABLE_TESTING)
 
 # ----------------------------------------------------------------------------
