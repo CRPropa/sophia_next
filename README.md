@@ -14,7 +14,7 @@ There are a variety of reasons why a C++ version of SOPHIA might be of interest:
 Actually, it's ready to use! However, a lot of the internal code needs more modernisation in every regard and can not be multi-threaded for the time being. This is work in progress, thus the code shall become more expressive and maybe be improved by further details some day.
 
 ## How easy is it to get running?
-Not at all, on your Linux system. Just clone this repository to ```yourDirectory``` and in it run in your terminal
+Super straight-forward on your Linux system and with no special dependencies. Just clone this repository to ```yourDirectory``` and in it run in your terminal
 ```
 mkdir build
 cd build
